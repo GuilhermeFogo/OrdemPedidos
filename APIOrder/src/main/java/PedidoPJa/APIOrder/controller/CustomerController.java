@@ -3,6 +3,10 @@ package PedidoPJa.APIOrder.controller;
 import java.util.Collection;
 import java.util.List;
 
+import javax.validation.Valid;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import PedidoPJa.APIOrder.modal.Customer;
@@ -26,23 +31,40 @@ public class CustomerController {
 	}
 	
 	@GetMapping()
-	public Collection<Customer> AllCustomers() {
-		return this.serviceCustomer.LookAll();
+	public ResponseEntity<Collection<Customer>> AllCustomers() {
+		return ResponseEntity.ok(this.serviceCustomer.LookAll());
+	}
+	@GetMapping("/{id}")
+	public ResponseEntity<Customer> LookOnlyCustomer(@PathVariable long id){
+		var customer = this.serviceCustomer.FindCustomers(id);
+		
+		if(customer.getId().equals(-1L)) {
+			return ResponseEntity.badRequest().build();
+		}
+		
+		return ResponseEntity.ok(customer);
 	}
 	
 	@PostMapping()
-	public void addCustomer(@RequestBody Customer customer) {
+	@ResponseStatus(HttpStatus.CREATED)
+	public void addCustomer(@Valid @RequestBody Customer customer) {
 		 this.serviceCustomer.AddCustomer(customer);
 	}
 	
 	@PutMapping("/{id}")
-	public Customer EditCustomer(@RequestBody Customer customer, @PathVariable long id) {
-		return this.serviceCustomer.EditCustumer(customer, id);
+	public ResponseEntity<Customer> EditCustomer(@Valid @RequestBody Customer customer, @PathVariable long id) {
+		var cust = this.serviceCustomer.EditCustumer(customer, id);
+		if(cust.getId().equals(-1L)) {
+			return ResponseEntity.notFound().build();
+		}else {
+			return ResponseEntity.ok(cust);
+		}
 	}
 	
 	@DeleteMapping("/{id}")
-	public void remove(long id) {
+	public ResponseEntity<Void> remove(@PathVariable long id) {
 		this.serviceCustomer.DeleteCustomerById(id);
+		return ResponseEntity.noContent().build();
 	}
 	
 	

@@ -33,6 +33,12 @@ public class CustomerService implements ICustomerService {
 
 	@Override
 	public Customer EditCustumer(Customer newCustomer, long id) {
+		if(!this.respository.existsById(id)) {
+			var customerNull = new Customer();
+			customerNull.setId(-1L);
+			return customerNull;
+		}
+		
 		return this.respository.findById(id).map(customer -> {
 			customer.setEmail(newCustomer.getEmail());
 			customer.setName(newCustomer.getName());
@@ -49,6 +55,19 @@ public class CustomerService implements ICustomerService {
 	public void DeleteCustomerById(long id) {
 		this.respository.deleteById(id);
 		
+	}
+
+
+	@Override
+	public Customer FindCustomers(long id) {
+		var opCliente = this.respository.findById(id);
+		if(opCliente.isPresent()) {
+			return opCliente.get();
+		}else {
+			var customer = new Customer();
+			customer.setId(-1L);
+			return customer;
+		}
 	}
 	
 }
