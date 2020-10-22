@@ -6,7 +6,8 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import PedidoPJa.APIOrder.modal.Customer;
+import PedidoPJa.APIOrder.dominio.exeption.BussinesExeption;
+import PedidoPJa.APIOrder.dominio.modal.Customer;
 import PedidoPJa.APIOrder.repository.IRepositoryCustomer;
 import PedidoPJa.APIOrder.service.interfaces.ICustomerService;
 
@@ -26,23 +27,27 @@ public class CustomerService implements ICustomerService {
 	}
 
 	@Override
-	public void AddCustomer(Customer customer) {
-		this.respository.save(customer);
+	public Customer AddCustomer(Customer customer) {
+		var ExistCustomer = this.respository.findByEmail(customer.getEmail());
+		
+		if(ExistCustomer !=null && !ExistCustomer.equals(customer)) {
+			throw new BussinesExeption("Já existe um cliente com o memso email");
+		}
+		return this.respository.save(customer);
+		
 		
 	}
 
 	@Override
 	public Customer EditCustumer(Customer newCustomer, long id) {
 		if(!this.respository.existsById(id)) {
-			var customerNull = new Customer();
-			customerNull.setId(-1L);
-			return customerNull;
+			return null;
 		}
 		
 		return this.respository.findById(id).map(customer -> {
 			customer.setEmail(newCustomer.getEmail());
 			customer.setName(newCustomer.getName());
-			customer.setPhone(customer.getPhone());
+			customer.setPhone(newCustomer.getPhone());
 			return this.respository.save(customer);
 		}).orElseGet(()->{
 			
@@ -64,9 +69,7 @@ public class CustomerService implements ICustomerService {
 		if(opCliente.isPresent()) {
 			return opCliente.get();
 		}else {
-			var customer = new Customer();
-			customer.setId(-1L);
-			return customer;
+			return null;
 		}
 	}
 	

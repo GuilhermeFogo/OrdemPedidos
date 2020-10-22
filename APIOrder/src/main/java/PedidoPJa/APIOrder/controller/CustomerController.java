@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import PedidoPJa.APIOrder.modal.Customer;
+import PedidoPJa.APIOrder.dominio.modal.Customer;
 import PedidoPJa.APIOrder.service.interfaces.ICustomerService;
 
 @RestController
@@ -38,8 +38,8 @@ public class CustomerController {
 	public ResponseEntity<Customer> LookOnlyCustomer(@PathVariable long id){
 		var customer = this.serviceCustomer.FindCustomers(id);
 		
-		if(customer.getId().equals(-1L)) {
-			return ResponseEntity.badRequest().build();
+		if(customer == null) {
+			return ResponseEntity.notFound().build();
 		}
 		
 		return ResponseEntity.ok(customer);
@@ -47,14 +47,14 @@ public class CustomerController {
 	
 	@PostMapping()
 	@ResponseStatus(HttpStatus.CREATED)
-	public void addCustomer(@Valid @RequestBody Customer customer) {
-		 this.serviceCustomer.AddCustomer(customer);
+	public Customer addCustomer(@Valid @RequestBody Customer customer) {
+		 return this.serviceCustomer.AddCustomer(customer);
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Customer> EditCustomer(@Valid @RequestBody Customer customer, @PathVariable long id) {
 		var cust = this.serviceCustomer.EditCustumer(customer, id);
-		if(cust.getId().equals(-1L)) {
+		if(cust == null) {
 			return ResponseEntity.notFound().build();
 		}else {
 			return ResponseEntity.ok(cust);

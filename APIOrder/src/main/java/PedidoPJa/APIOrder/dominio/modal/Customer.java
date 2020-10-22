@@ -1,4 +1,4 @@
-package PedidoPJa.APIOrder.modal;
+package PedidoPJa.APIOrder.dominio.modal;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

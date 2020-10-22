@@ -3,9 +3,9 @@ package PedidoPJa.APIOrder.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import PedidoPJa.APIOrder.dominio.modal.Customer;
+import PedidoPJa.APIOrder.dominio.modal.Demand;
 
 @Repository
-public interface IRepositoryCustomer extends JpaRepository<Customer, Long> {
-	Customer findByEmail(String email);
+public interface IDemandRepository extends JpaRepository<Demand, Long> {
+
 }
