@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import PedidoPJa.APIOrder.dominio.modal.Demand;
+import PedidoPJa.APIOrder.model.DemandInputModel;
+import PedidoPJa.APIOrder.model.DemandModel;
 import PedidoPJa.APIOrder.service.interfaces.IDemandService;
 
 @RestController
@@ -29,12 +31,12 @@ public class DemandController {
 	}
 	
 	@GetMapping()
-	public ResponseEntity<Collection<Demand>> LookAllOrders() {
+	public ResponseEntity<Collection<DemandModel>> LookAllOrders() {
 		return ResponseEntity.ok(this.service.LookAll());
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Demand> LookOnlyDemand(@PathVariable long id) {
+	public ResponseEntity<DemandModel> LookOnlyDemand(@PathVariable long id) {
 		var a = this.service.FindOrder(id);
 		
 		
@@ -43,14 +45,14 @@ public class DemandController {
 	
 	@PostMapping()
 	@ResponseStatus(HttpStatus.CREATED)
-	public void addOrder(@Valid @RequestBody Demand order) {
-		this.service.AddOrder(order);
+	public DemandModel addOrder(@Valid @RequestBody DemandInputModel order) {
+		return this.service.AddOrder(order);
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Demand> updateOrder(@Valid @RequestBody Demand order, @PathVariable long id) {
+	public ResponseEntity<DemandModel> updateOrder(@Valid @RequestBody DemandInputModel order, @PathVariable long id) {
 		var oneOrder = this.service.UpdateOrder(order, id);
-		if(oneOrder.getId().equals(-1L)) {
+		if(oneOrder == null) {
 			return ResponseEntity.badRequest().build();
 		}
 		

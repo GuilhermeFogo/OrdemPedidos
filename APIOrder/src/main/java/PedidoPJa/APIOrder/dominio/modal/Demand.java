@@ -48,11 +48,6 @@ public class Demand {
 	private OffsetDateTime endDay;
 	
 	
-	public Demand() {
-		this.openDay = OffsetDateTime.now();
-		this.status = StatusOrder.Open;
-	}
-	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

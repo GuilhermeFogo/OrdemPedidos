@@ -3,15 +3,17 @@ package PedidoPJa.APIOrder.service.interfaces;
 import java.util.Collection;
 
 import PedidoPJa.APIOrder.dominio.modal.Demand;
+import PedidoPJa.APIOrder.model.DemandInputModel;
+import PedidoPJa.APIOrder.model.DemandModel;
 
 public interface IDemandService {
-	Collection<Demand> LookAll();
+	Collection<DemandModel> LookAll();
 
-	Demand FindOrder(long id);
+	DemandModel FindOrder(long id);
 
-	void AddOrder(Demand order);
+	DemandModel AddOrder(DemandInputModel order);
 
-	Demand UpdateOrder(Demand order, long id);
+	DemandModel UpdateOrder(DemandInputModel order, long id);
 
 	void DeleteOrder(long id);
 }

@@ -1,68 +1,94 @@
 package PedidoPJa.APIOrder.service;
 
+import java.time.OffsetDateTime;
 import java.util.Collection;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import PedidoPJa.APIOrder.dominio.exeption.BussinesExeption;
 import PedidoPJa.APIOrder.dominio.modal.Customer;
 import PedidoPJa.APIOrder.dominio.modal.Demand;
+import PedidoPJa.APIOrder.dominio.modal.StatusOrder;
+import PedidoPJa.APIOrder.model.DemandInputModel;
+import PedidoPJa.APIOrder.model.DemandModel;
 import PedidoPJa.APIOrder.repository.IDemandRepository;
+import PedidoPJa.APIOrder.repository.IRepositoryCustomer;
 import PedidoPJa.APIOrder.service.interfaces.IDemandService;
 
 @Service
 public class DemandService implements IDemandService {
 
 	private IDemandRepository repository;
+	private IRepositoryCustomer repositoryCustomer;
 
 	@Autowired
-	public DemandService(IDemandRepository repository) {
+	private ModelMapper modalmaaper;
+	
+	@Autowired
+	public DemandService(IDemandRepository repository, IRepositoryCustomer repositoryCustomer) {
 		this.repository = repository;
+		this.repositoryCustomer = repositoryCustomer;
 	}
 
 	@Override
-	public Collection<Demand> LookAll() {
-		return this.repository.findAll();
+	public Collection<DemandModel> LookAll() {
+		return toModalCollection(this.repository.findAll());
 	}
 
 	@Override
-	public void AddOrder(Demand order) {
-		this.repository.save(order);
+	public DemandModel AddOrder(DemandInputModel order) {
+		Demand myDemand = toEntity(order);
+		Customer customer = this.repositoryCustomer.findById(myDemand.getCustomer().getId())
+				.orElseThrow(()-> new BussinesExeption("Cliente não encontrado"));
+		myDemand.setCustomer(customer);
+		myDemand.setStatus(StatusOrder.Open);
+		myDemand.setOpenDay(OffsetDateTime.now());
+		
+		return toModal(this.repository.save(myDemand));
+		
 	}
 
-	@Override
-	public Demand UpdateOrder(Demand neworder, long id) {
-		if (!this.repository.existsById(id)) {
-			var customerNull = new Customer();
-			customerNull.setId(-1L);
-			return neworder;
+	public DemandModel UpdateOrder(DemandInputModel neworder, long id) {
+		if (this.repository.existsById(id)) {
+			var transfom =  toEntity(neworder);
+			return toModal(this.repository.save(transfom));
 		}
-
-		return this.repository.findById(id).map(order -> {
-			order.setDescricao(neworder.getDescricao());
-			order.setPrice(neworder.getPrice());
-			order.setStatus(neworder.getStatus());
-			order.setEndDay(neworder.getEndDay());
-			order.setOpenDay(neworder.getOpenDay());
-			return this.repository.save(order);
-		}).orElseGet(() -> {
-
-			neworder.setId(id);
-			return this.repository.save(neworder);
-		});
+		return null;
 	}
 
 	@Override
 	public void DeleteOrder(long id) {
-		
+		this.repository.deleteById(id);
 	}
 
 	@Override
-	public Demand FindOrder(long id) {
+	public DemandModel FindOrder(long id) {
 		var opDemand = this.repository.findById(id);
 		if(opDemand.isPresent()) {
-			return opDemand.get();
+			DemandModel demandModel = toModal(opDemand.get());
+			return demandModel;
 		}
 		return null;
 	}
+	
+	
+	private DemandModel toModal(Demand demand) {
+		return modalmaaper.map(demand, DemandModel.class);
+	}
+	
+	private Collection<DemandModel> toModalCollection(Collection<Demand> list){
+		return list.stream()
+				.map(ordem -> toModal(ordem))
+				.collect(Collectors.toList());
+	}
+	
+	
+	private Demand toEntity(DemandInputModel input) {
+		return modalmaaper.map(input, Demand.class);
+	}
+	
 }
