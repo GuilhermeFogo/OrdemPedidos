@@ -31,7 +31,7 @@ public class CustomerService implements ICustomerService {
 		var ExistCustomer = this.respository.findByEmail(customer.getEmail());
 		
 		if(ExistCustomer !=null && !ExistCustomer.equals(customer)) {
-			throw new BussinesExeption("Já existe um cliente com o memso email");
+			throw new BussinesExeption("Já existe um cliente com o mesmo email");
 		}
 		return this.respository.save(customer);
 		
