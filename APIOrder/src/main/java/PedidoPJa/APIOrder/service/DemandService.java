@@ -57,8 +57,20 @@ public class DemandService implements IDemandService {
 
 	public DemandModel UpdateOrder(DemandInputModel neworder, long id) {
 		if (this.repository.existsById(id)) {
-			var transfom =  toEntity(neworder);
-			return toModal(this.repository.save(transfom));*
+			Demand demand = this.repository.findById(id).get();
+			demand.setDescricao(neworder.getDescricao());
+			demand.setPrice(neworder.getPrice());
+			return toModal(this.repository.save(demand));
+		}
+		return null;
+	}
+	
+	public DemandModel CloseOrder(DemandInputModel neworder, long id) {
+		if (this.repository.existsById(id)) {
+			Demand demand = this.repository.findById(id).get();
+			demand.setStatus(StatusOrder.Finish);
+			demand.setEndDay(OffsetDateTime.now());
+			return toModal(this.repository.save(demand));
 		}
 		return null;
 	}

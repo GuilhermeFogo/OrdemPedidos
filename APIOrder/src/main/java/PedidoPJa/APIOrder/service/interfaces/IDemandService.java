@@ -14,6 +14,8 @@ public interface IDemandService {
 	DemandModel AddOrder(DemandInputModel order);
 
 	DemandModel UpdateOrder(DemandInputModel order, long id);
+	
+	DemandModel CloseOrder(DemandInputModel order, long id);
 
 	void DeleteOrder(long id);
 }

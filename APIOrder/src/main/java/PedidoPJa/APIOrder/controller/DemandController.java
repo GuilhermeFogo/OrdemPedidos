@@ -38,8 +38,6 @@ public class DemandController {
 	@GetMapping("/{id}")
 	public ResponseEntity<DemandModel> LookOnlyDemand(@PathVariable long id) {
 		var a = this.service.FindOrder(id);
-		
-		
 		return ResponseEntity.ok(a);
 	}
 	
@@ -56,6 +54,15 @@ public class DemandController {
 			return ResponseEntity.badRequest().build();
 		}
 		
+		return ResponseEntity.ok(oneOrder);		
+	}
+	
+	@PutMapping("/{id}/finaliza")
+	public ResponseEntity<DemandModel> CloseOrder(@Valid @RequestBody DemandInputModel order, @PathVariable long id) {
+		var oneOrder = this.service.CloseOrder(order, id);
+		if(oneOrder == null) {
+			return ResponseEntity.badRequest().build();
+		}
 		return ResponseEntity.ok(oneOrder);		
 	}
 	
