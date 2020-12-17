@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import PedidoPJa.APIOrder.dominio.modal.Commet;
 import PedidoPJa.APIOrder.model.CommetInputModel;
+import PedidoPJa.APIOrder.model.CommetModel;
 import PedidoPJa.APIOrder.service.interfaces.ICommetService;
 
 @RestController
@@ -26,12 +27,12 @@ public class CommetController {
 	
 	
 	@GetMapping()
-	public CommetInputModel listar(@PathVariable Long ordemServicoId){
+	public CommetModel listar(@PathVariable Long ordemServicoId){
 		return this.commetService.LookCommensts(ordemServicoId);
 	}
 	
 	@PostMapping()
-	public CommetInputModel AddComments(@PathVariable Long ordemServicoId, @Valid @RequestBody CommetInputModel comentario) {
+	public CommetModel AddComments(@PathVariable Long ordemServicoId, @Valid @RequestBody CommetInputModel comentario) {
 		return this.commetService.addComment(comentario, ordemServicoId);
 	}
 	

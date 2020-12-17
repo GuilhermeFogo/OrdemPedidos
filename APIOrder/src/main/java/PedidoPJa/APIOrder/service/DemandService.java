@@ -41,12 +41,15 @@ public class DemandService implements IDemandService {
 
 	@Override
 	public DemandModel AddOrder(DemandInputModel order) {
-		Demand myDemand = toEntity(order);
-		Customer customer = this.repositoryCustomer.findById(myDemand.getCustomer().getId())
+		Demand myDemand = new Demand();
+		Customer customer = this.repositoryCustomer.findById(order.getId_customer())
 				.orElseThrow(()-> new BussinesExeption("Cliente não encontrado"));
+		myDemand.setId(0L);
 		myDemand.setCustomer(customer);
 		myDemand.setStatus(StatusOrder.Open);
 		myDemand.setOpenDay(OffsetDateTime.now());
+		myDemand.setPrice(order.getPrice());
+		myDemand.setDescricao(order.getDescricao());
 		
 		return toModal(this.repository.save(myDemand));
 		
@@ -55,7 +58,7 @@ public class DemandService implements IDemandService {
 	public DemandModel UpdateOrder(DemandInputModel neworder, long id) {
 		if (this.repository.existsById(id)) {
 			var transfom =  toEntity(neworder);
-			return toModal(this.repository.save(transfom));
+			return toModal(this.repository.save(transfom));*
 		}
 		return null;
 	}
@@ -67,12 +70,9 @@ public class DemandService implements IDemandService {
 
 	@Override
 	public DemandModel FindOrder(long id) {
-		var opDemand = this.repository.findById(id);
-		if(opDemand.isPresent()) {
-			DemandModel demandModel = toModal(opDemand.get());
-			return demandModel;
-		}
-		return null;
+		var opDemand = this.repository.findById(id).orElseThrow(()-> new BussinesExeption("Pedido não encontrado"));
+		DemandModel demandModel = toModal(opDemand);
+		return demandModel;
 	}
 	
 	

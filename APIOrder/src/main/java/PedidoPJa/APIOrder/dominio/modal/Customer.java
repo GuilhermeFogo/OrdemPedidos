@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -13,9 +15,11 @@ import lombok.Data;
 
 @Entity
 @Data
+@Table(name = "Cliente")
 public class Customer{
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator = "SEQ_Cliente")
+	@SequenceGenerator(initialValue = 1, name = "SEQ_Cliente")
 	private Long id;
 	
 	@NotBlank
@@ -23,7 +27,7 @@ public class Customer{
 	private String name;
 	
 	@NotBlank
-	@Size(max = 255)
+	@Size(max = 100)
 	@Email
 	private String email;
 	

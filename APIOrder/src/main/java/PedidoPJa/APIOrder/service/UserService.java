@@ -41,11 +41,8 @@ public class UserService implements IUserService {
 
 	@Override
 	public UserModal FindUser(Long id) {
-		var usu = this.repository.findById(id);
-		if (usu.isPresent()) {
-			return toModal(usu.get());
-		}
-		return null;
+		var usu = this.repository.findById(id).orElseThrow(()-> new BussinesExeption("Usuario não encontrado"));
+		return toModal(usu);
 	}
 
 	@Override

@@ -8,8 +8,7 @@ import lombok.Data;
 
 @Data
 public class DemandModel {
-	private Long idCustomer;
-	private String nameCustomer;
+	private CustomerModel customer;
 	private String descricao;
 	private BigDecimal price;
 	private StatusOrder status;

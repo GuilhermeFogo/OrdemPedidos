@@ -2,14 +2,10 @@ package PedidoPJa.APIOrder.dominio.modal;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.NotBlank;
 
@@ -20,15 +16,17 @@ import lombok.Data;
 
 @Entity
 @Data
+@Table(name = "Pedido")
 public class Demand {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator = "SEQ_Pedido")
+	@SequenceGenerator(initialValue = 1, name = "SEQ_Pedido")
 	private Long id;
 	
-	@Valid
 	@NotNull
 	@ManyToOne
+	@JoinColumn(name="id_cliente")
 	private Customer customer;
 	
 	@NotBlank
@@ -38,15 +36,13 @@ public class Demand {
 	private BigDecimal price;
 	
 	@Enumerated(EnumType.STRING)
-	@JsonProperty(access = Access.READ_ONLY)
 	private StatusOrder status;
 	
-	@JsonProperty(access = Access.READ_ONLY)
+	@Column(name = "data_inicio")
 	private OffsetDateTime openDay;
 	
-	@JsonProperty(access = Access.READ_ONLY)
+	@Column(name = "data_fim")
 	private OffsetDateTime endDay;
-	
 	
 	@Override
 	public boolean equals(Object obj) {

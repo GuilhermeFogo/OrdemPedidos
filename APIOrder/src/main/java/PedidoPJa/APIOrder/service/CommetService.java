@@ -15,6 +15,7 @@ import PedidoPJa.APIOrder.dominio.modal.Customer;
 import PedidoPJa.APIOrder.dominio.modal.Demand;
 import PedidoPJa.APIOrder.dominio.modal.StatusOrder;
 import PedidoPJa.APIOrder.model.CommetInputModel;
+import PedidoPJa.APIOrder.model.CommetModel;
 import PedidoPJa.APIOrder.model.DemandInputModel;
 import PedidoPJa.APIOrder.model.DemandModel;
 import PedidoPJa.APIOrder.repository.ICommentRepository;
@@ -36,18 +37,20 @@ public class CommetService implements ICommetService {
 	}
 	
 	@Override
-	public Collection<CommetInputModel> LookALL(){
+	public Collection<CommetModel> LookALL(){
 		return toModalCollection(this.commetRepository.findAll());
 	}
 	
 	@Override
-	public CommetInputModel addComment(CommetInputModel commet, Long id) {
-		Commet myDescription = toEntity(commet);
+	public CommetModel addComment(CommetInputModel commet, Long id) {
 		Demand demand = this.demandRepository.findById(id)
 				.orElseThrow(()-> new BussinesExeption("Pedido não encontrado"));
 		
+		Commet myDescription = new Commet();
 		myDescription.setDemand(demand);
 		myDescription.setDate(OffsetDateTime.now());
+		myDescription.setDescription(commet.getDescription());
+		
 		
 		return toModal(this.commetRepository.save(myDescription));
 	}
@@ -55,7 +58,7 @@ public class CommetService implements ICommetService {
 	
 	
 	@Override
-	public CommetInputModel LookCommensts(Long id) {
+	public CommetModel LookCommensts(Long id) {
 		Commet commits = this.commetRepository.findById(id).
 				orElseThrow(()-> new BussinesExeption("Ordem de serviço não encontrada"));
 		return toModal(commits);
@@ -63,18 +66,18 @@ public class CommetService implements ICommetService {
 	
 	
 	
-	private CommetInputModel toModal(Commet comment) {
-		return mapper.map(comment, CommetInputModel.class);
+	private CommetModel toModal(Commet comment) {
+		return mapper.map(comment, CommetModel.class);
 	}
 	
-	private Collection<CommetInputModel> toModalCollection(Collection<Commet> list){
+	private Collection<CommetModel> toModalCollection(Collection<Commet> list){
 		return list.stream()
 				.map(ordem -> toModal(ordem))
 				.collect(Collectors.toList());
 	}
 	
 	
-	private Commet toEntity(CommetInputModel input) {
+	private Commet toEntity(CommetModel input) {
 		return mapper.map(input, Commet.class);
 	}
 
